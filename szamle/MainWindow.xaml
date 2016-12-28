@@ -3,10 +3,37 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:properties="clr-namespace:szamle.Properties"
+        xmlns:cefSharp="clr-namespace:CefSharp.Wpf;assembly=CefSharp.Wpf"
         xmlns:local="clr-namespace:szamle"
         mc:Ignorable="d"
-        Title="MainWindow" Height="350" Width="525">
+        Title="Számla letöltő" Height="768" Width="1024" Closed="Window_Closed">
+    <Window.CommandBindings>
+        <CommandBinding Command="Open" CanExecute="Url_Open_CommandBinding_CanExecute" Executed="Url_Open_CommandBinding_Executed" />
+    </Window.CommandBindings>
     <Grid>
-        
+        <Grid.RowDefinitions>
+            <RowDefinition Height="27" />
+            <RowDefinition Height="*" />
+            <RowDefinition Height="25" />
+        </Grid.RowDefinitions>
+        <DockPanel Grid.Row="0" VerticalAlignment="Stretch" HorizontalAlignment="Stretch">
+            <ToolBarPanel DockPanel.Dock="Top">
+                <ToolBar>
+                    <Button Command="Open" Content="Rajta" IsEnabled="True" Name="RajtaGomb" />
+                    <TextBox Name="URLTextBox" Margin="3,0" MinWidth="120" Text="{Binding Source={x:Static properties:Settings.Default}, Path=StartUrl}" IsReadOnly="True"/>
+                    <TextBox Name="user" Text="{Binding Source={x:Static properties:Settings.Default}, Path=UserName}" Margin="3,0" MinWidth="60" />
+                    <PasswordBox Name="pwd" Margin="3,0" MinWidth="60" ToolTip="Nem mentjük el, nem tároljuk, mindig meg kell adni!"/>
+                    <TextBox Name="dlpath" MinWidth="220" Margin="3,0" />
+                </ToolBar>
+            </ToolBarPanel>
+            <TextBox AcceptsReturn="True" />
+        </DockPanel>
+        <cefSharp:ChromiumWebBrowser Grid.Row="1" x:Name="webBrowser" />
+        <StatusBar Grid.Row="2" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+            <DockPanel>
+                <TextBlock Name="statustext" />
+            </DockPanel>
+        </StatusBar>
     </Grid>
 </Window>
