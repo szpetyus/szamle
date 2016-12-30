@@ -138,14 +138,12 @@ namespace szamle
                                 collectInvoices(); // azután pegig új szálon letöltés
                                 break;
                             case dlStatus.search:
-                                //webBrowserDetail.Load(invDownloadTabUrl);
+                                clickOnJs("Letöltés");
+                                subStatus = dlStatus.found;
+                                subRow = 0;
                                 Application.Current.Dispatcher.Invoke(new Action(() =>
                                 {
-                                    webBrowser.GetBrowser().MainFrame.EvaluateScriptAsync(
-                                        "document.getElementById('tabs-form').children[0].children[2].children[0].click();");
                                     statustext.Text = String.Format("Letöltés alatt: {0}", invoiceIpc.invoices[rowNum].fileNameMask);
-                                    subStatus = dlStatus.found;
-                                    subRow = 0;
                                 }));
                                 break;
                             case dlStatus.found:
@@ -190,8 +188,7 @@ namespace szamle
                                     }");
                                     if (subRow>9)
                                     {
-                                        webBrowser.GetBrowser().MainFrame.EvaluateScriptAsync(@"console.info('vissza');
-                                        document.getElementById('content').children[0].children[1].children[0].click(); ");
+                                        clickOnJs(" vissza a listához");
                                         subStatus = dlStatus.download;
                                         subRow = 0;
                                     }
@@ -207,8 +204,6 @@ namespace szamle
                                         Thread.Yield();
                                         Thread.Sleep(2000);
                                         Thread.Yield();
-//                                        new Thread(() => webBrowser.GetBrowser().MainFrame.EvaluateScriptAsync(
-//                                            "document.getElementById('content').children[0].children[1].children[0].click();")).Start();
                                     }
                                     else
                                     {
@@ -228,11 +223,8 @@ namespace szamle
 
         private void searchTab()
         {
-            Application.Current.Dispatcher.Invoke(new Action(() =>
-            {
-                webBrowser.Load(searchTabUrl);
-                status = dlStatus.search;
-            }));
+            clickOnJs("Számlakeresés");
+            status = dlStatus.search;
         }
 
         private void searchInvoices()
@@ -265,6 +257,18 @@ namespace szamle
                     row.children[4].children[0].text, row.children[5].children[0].text, row.children[6].children[0].text, 
                     row.children[7].children[0].text);
                 }").ContinueWith((t) => downloadInvoicesWorker());
+            }));
+        }
+
+        //Számlakeresés
+        //Letöltés
+        // vissza a listához
+        protected void clickOnJs(String anchorText)
+        {
+            Application.Current.Dispatcher.Invoke(new Action(() =>
+            {
+                webBrowser.GetBrowser().MainFrame.EvaluateScriptAsync(String.Format(
+                    "linkz = document.getElementsByTagName('a'); for(i=0;i<linkz.length;i++) if ('{0}'==linkz[i].innerText) linkz[i].click();", anchorText));
             }));
         }
 
