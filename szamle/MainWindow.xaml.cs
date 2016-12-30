@@ -169,7 +169,7 @@ namespace szamle
                                             else // Skip: minden más
                                             {
                                                 console.info('skip row ' + " + subRow + @");
-                                                document.getElementById('tabs-form').children[0].children[2].children[0].click();
+                                                " + mkAnchorIteratorJs("Letöltés") + @"
                                             }
                                             //TODO: popup ablak kezelése és letöltés  if(row.children[1].children[0].href.indexOf('szamla_xml') != -1) {row.children[1].children[0].click(); alert('2');}
                                         } 
@@ -177,14 +177,14 @@ namespace szamle
                                         {
                                             // trigger the LoadingStatusChanged event from JS
                                             console.info('skip row ' + " + subRow + @");
-                                            document.getElementById('tabs-form').children[0].children[2].children[0].click();
+                                            " + mkAnchorIteratorJs("Letöltés") + @"
                                         }
                                     }
                                     else
                                     {
                                         // trigger the LoadingStatusChanged event from JS
                                         console.info('skip row ' + " + subRow + @");
-                                        document.getElementById('tabs-form').children[0].children[2].children[0].click();
+                                        " + mkAnchorIteratorJs("Letöltés") + @"
                                     }");
                                     if (subRow>9)
                                     {
@@ -267,9 +267,13 @@ namespace szamle
         {
             Application.Current.Dispatcher.Invoke(new Action(() =>
             {
-                webBrowser.GetBrowser().MainFrame.EvaluateScriptAsync(String.Format(
-                    "linkz = document.getElementsByTagName('a'); for(i=0;i<linkz.length;i++) if ('{0}'==linkz[i].innerText) linkz[i].click();", anchorText));
+                webBrowser.GetBrowser().MainFrame.EvaluateScriptAsync(mkAnchorIteratorJs(anchorText));
             }));
+        }
+
+        protected String mkAnchorIteratorJs(String anchorText)
+        {
+            return String.Format("linkz = document.getElementsByTagName('a'); for(i=0;i<linkz.length;i++) if ('{0}'==linkz[i].innerText) linkz[i].click();", anchorText);
         }
 
         private void downloadInvoicesWorker()
