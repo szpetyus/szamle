@@ -17,6 +17,13 @@ namespace szamle
         public String fizetendo { get; set; }
         public String allapot { get; set; }
         public String href { get; set; }
+        public String norm_szamlaszam {
+            get
+            {
+                if (szamlaszam == null) return null;
+                return szamlaszam.Substring(szamlaszam.LastIndexOf('/')+1);
+            }
+        }
 
         public String fileNameMask
         {

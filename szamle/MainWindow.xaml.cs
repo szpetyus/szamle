@@ -14,18 +14,85 @@ namespace szamle
     {
         private const string absoluteUriError = "Abszolút címet kell megadni, pl: http://www.microsoft.com/";
         private const string usernameempty = "A bejelentkezéshez szükség lesz a felhasználó névre";
-        private const string passswordempy = "A bejelentkezéshez szükség lesz a jelszóra";
+        private const string passwordempy = "A bejelentkezéshez szükség lesz a jelszóra";
+        public static string mask_szolgaltato = "$szolgáltató";
+        public static string mask_ev = "$év";
         private const string statusdownload = "Letöltés..";
         private const String searchTabUrl = "https://www.dijnet.hu/ekonto/control/szamla_search";
         private const String logonUrl = "https://www.dijnet.hu/ekonto/login/login_check_password";
         private const String invDownloadTabUrl = "https://www.dijnet.hu/ekonto/control/szamla_letolt#tab_szamla_letolt";
-        private InvoiceIpc invoiceIpc;
+        public static InvoiceIpc invoiceIpc;
         private List<String> filesDone = new List<string>();
         private int subRow = 0;
         private volatile dlStatus status = dlStatus.zero;
         private volatile dlStatus subStatus = dlStatus.zero;
         private volatile int rowNum = 0;
         private String fileNameMask { get; set; }
+        private String _directoryMask;
+        private bool _isProvider;
+        private bool _isYear;
+
+        public String directoryMask {
+            get
+            {
+                return _directoryMask;
+            }
+            set
+            {
+                _directoryMask = value;
+                validateDirectoryMask();
+            }
+        }
+
+        public bool isProvider
+        {
+            get
+            {
+                return _isProvider;
+            }
+            set
+            {
+                if (!_isProvider)
+                {
+                    _directoryMask = String.Format(@"{0}\{1}\",directoryMask,mask_szolgaltato);
+                }
+                else
+                {
+                    _directoryMask = _directoryMask.Replace(mask_szolgaltato, "");
+                }
+                validateDirectoryMask();
+            }
+        }
+
+        public bool isYear
+        {
+            get
+            {
+                return _isYear;
+            }
+            set
+            {
+                if (!_isYear)
+                {
+                    _directoryMask = String.Format(@"{0}\{1}\", directoryMask, mask_ev);
+                }
+                else
+                {
+                    _directoryMask = _directoryMask.Replace(mask_ev, "");
+                }
+                validateDirectoryMask();
+            }
+        }
+
+        private void validateDirectoryMask()
+        {
+            _directoryMask = _directoryMask.Replace(@"\\", @"\");
+            _isYear = _directoryMask.Contains(mask_ev);
+            _isProvider = _directoryMask.Contains(mask_szolgaltato);
+            OnPropertyChanged("isProvider");
+            OnPropertyChanged("isYear");
+            OnPropertyChanged("directoryMask");
+        }
 
         public event PropertyChangedEventHandler PropertyChanged;
         private void OnPropertyChanged(String name)
@@ -45,13 +112,15 @@ namespace szamle
             DataContext = this;
             string pathUser = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
             string pathDownload = System.IO.Path.Combine(pathUser, "Szamle");
+            if (invoiceIpc != null)
+            {
+                MessageBox.Show("Csak egy példányban futtatható a program!\n Ha nem látsz másik ugyanilyen ablakot, indítsd újra a gépet");
+            }
             invoiceIpc = new InvoiceIpc();
             this.webBrowser.RegisterJsObject("szamleIpc", invoiceIpc);
-            dlpath.Text = pathDownload;
+            directoryMask = pathDownload;
             this.webBrowser.LoadingStateChanged += WebBrowser_LoadingStatusChanged;
-            this.webBrowser.DownloadHandler = new DownloadHandler(dlpath.Text, this.webBrowser);
             this.webBrowser.LifeSpanHandler = new szamle.LifeSpanHandler();
-            //this.webBrowserDetail.DownloadHandler = 
         }
 
         private void Url_Open_CommandBinding_CanExecute(object sender, CanExecuteRoutedEventArgs e)
@@ -70,7 +139,7 @@ namespace szamle
 
             if (pwd == null || string.IsNullOrWhiteSpace(pwd.Password))
             {
-                if (statustext != null) statustext.Text = passswordempy;
+                if (statustext != null) statustext.Text = passwordempy;
                 e.CanExecute = false;
             }
             e.CanExecute = true;
@@ -81,8 +150,9 @@ namespace szamle
             try
             {
                 this.RajtaGomb.IsEnabled = false;
+                this.webBrowser.DownloadHandler = new DownloadHandler(directoryMask, this.webBrowser);
                 busy(true);
-                if (!System.IO.Directory.Exists(dlpath.Text)) System.IO.Directory.CreateDirectory(dlpath.Text);
+                //if (!System.IO.Directory.Exists(directoryMask)) System.IO.Directory.CreateDirectory(directoryMask);
                 status = dlStatus.home;
                 this.webBrowser.Load(Properties.Settings.Default.StartUrl);
             }
@@ -306,6 +376,7 @@ namespace szamle
             }
             status = dlStatus.logoff;
             busy(false);
+            clickOnJs("Kilépés");
             MessageBox.Show("Ennyi volt");
         }
 

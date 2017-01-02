@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace szamle
 {
-    class InvoiceIpc
+    public class InvoiceIpc
     {
         public List<Invoice> invoices { get; set; }
 
