@@ -8,5 +8,11 @@
     <Setting Name="StartUrl" Type="System.String" Scope="User">
       <Value Profile="(Default)">https://www.dijnet.hu/</Value>
     </Setting>
+    <Setting Name="DirectoryMask" Type="System.String" Scope="User">
+      <Value Profile="(Default)" />
+    </Setting>
+    <Setting Name="OverwriteFiles" Type="System.Boolean" Scope="User">
+      <Value Profile="(Default)">False</Value>
+    </Setting>
   </Settings>
 </SettingsFile>

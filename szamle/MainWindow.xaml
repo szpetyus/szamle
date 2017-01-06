@@ -18,15 +18,28 @@
             <RowDefinition Height="25" />
         </Grid.RowDefinitions>
         <ToolBarPanel Grid.Row="0" HorizontalAlignment="Stretch" >
-            <ToolBar HorizontalAlignment="Stretch">
-                <Button Command="Open" Content="Rajta" IsEnabled="True" Name="RajtaGomb" />
-                <TextBox Name="URLTextBox" Margin="3,0" MinWidth="120" Text="{Binding Source={x:Static properties:Settings.Default}, Path=StartUrl}" IsReadOnly="True"/>
-                <TextBox Name="user" Text="{Binding Source={x:Static properties:Settings.Default}, Path=UserName}" Margin="3,0" MinWidth="60" />
-                <PasswordBox Name="pwd" Margin="3,0" MinWidth="60" ToolTip="Nem mentjük el, nem tároljuk, mindig meg kell adni!"/>
-                <TextBox Name="dlpath" MinWidth="120" Margin="3,0" Text="{Binding directoryMask}" HorizontalAlignment="Stretch" />
-                <CheckBox Name="pProvider" Content="+Szolgáltató" IsChecked="{Binding isProvider}" />
-                <CheckBox Name="pYear" Content="+Év" IsChecked="{Binding isYear}" />
-            </ToolBar>
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="50"/>
+                    <ColumnDefinition Width="130"/>
+                    <ColumnDefinition Width="100"/>
+                    <ColumnDefinition Width="100"/>
+                    <ColumnDefinition/>
+                    <ColumnDefinition Width="185"/>
+                </Grid.ColumnDefinitions>
+                <ToolBar Grid.Column="0" HorizontalAlignment="Stretch" ToolBarTray.IsLocked="True">
+                    <Button Command="Open" Content="Rajta" IsEnabled="True" Name="RajtaGomb" />
+                </ToolBar>
+                <TextBox Grid.Column="1" Name="URLTextBox" Margin="3,0" Text="{Binding Source={x:Static properties:Settings.Default}, Path=StartUrl}" IsReadOnly="True" VerticalAlignment="Center" />
+                <TextBox Grid.Column="2" Name="user" Text="{Binding Source={x:Static properties:Settings.Default}, Path=UserName}" Margin="3,0" VerticalAlignment="Center" />
+                <PasswordBox Grid.Column="3" Name="pwd" Margin="3,0" ToolTip="Nem mentjük el, nem tároljuk, mindig meg kell adni!" VerticalAlignment="Center"/>
+                <TextBox Grid.Column="4" Name="dlpath" Margin="3,0" Text="{Binding directoryMask}" HorizontalAlignment="Stretch" VerticalAlignment="Center" />
+                <ToolBar Grid.Column="5" ToolBarTray.IsLocked="True">
+                    <CheckBox Name="pProvider" Content="+Szolgáltató" IsChecked="{Binding isProvider}" />
+                    <CheckBox Name="pYear" Content="+Év" IsChecked="{Binding isYear}" />
+                    <CheckBox Name="pIssuer" Content="+Kibocsátó" IsChecked="{Binding isIssuer}" />
+                </ToolBar>
+            </Grid>
         </ToolBarPanel>
         <cefSharp:ChromiumWebBrowser Grid.Row="1" x:Name="webBrowser" />
         <StatusBar Grid.Row="2" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">

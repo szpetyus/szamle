@@ -46,5 +46,29 @@ namespace szamle.Properties {
                 this["StartUrl"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        public string DirectoryMask {
+            get {
+                return ((string)(this["DirectoryMask"]));
+            }
+            set {
+                this["DirectoryMask"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool OverwriteFiles {
+            get {
+                return ((bool)(this["OverwriteFiles"]));
+            }
+            set {
+                this["OverwriteFiles"] = value;
+            }
+        }
     }
 }

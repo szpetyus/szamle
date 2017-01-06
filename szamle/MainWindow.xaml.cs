@@ -17,6 +17,7 @@ namespace szamle
         private const string passwordempy = "A bejelentkezéshez szükség lesz a jelszóra";
         public static string mask_szolgaltato = "$szolgáltató";
         public static string mask_ev = "$év";
+        public static string mask_issuer = "$kibocsátó";
         private const string statusdownload = "Letöltés..";
         private const String searchTabUrl = "https://www.dijnet.hu/ekonto/control/szamla_search";
         private const String logonUrl = "https://www.dijnet.hu/ekonto/login/login_check_password";
@@ -31,6 +32,7 @@ namespace szamle
         private String _directoryMask;
         private bool _isProvider;
         private bool _isYear;
+        private bool _isIssuer;
 
         public String directoryMask {
             get
@@ -84,13 +86,35 @@ namespace szamle
             }
         }
 
+        public bool isIssuer
+        {
+            get
+            {
+                return _isIssuer;
+            }
+            set
+            {
+                if (!_isIssuer)
+                {
+                    _directoryMask = String.Format(@"{0}\{1}\", directoryMask, mask_issuer);
+                }
+                else
+                {
+                    _directoryMask = _directoryMask.Replace(mask_issuer, "");
+                }
+                validateDirectoryMask();
+            }
+        }
+
         private void validateDirectoryMask()
         {
             _directoryMask = _directoryMask.Replace(@"\\", @"\");
             _isYear = _directoryMask.Contains(mask_ev);
             _isProvider = _directoryMask.Contains(mask_szolgaltato);
+            _isIssuer = _directoryMask.Contains(mask_issuer);
             OnPropertyChanged("isProvider");
             OnPropertyChanged("isYear");
+            OnPropertyChanged("isIssuer");
             OnPropertyChanged("directoryMask");
         }
 
@@ -112,13 +136,21 @@ namespace szamle
             DataContext = this;
             string pathUser = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
             string pathDownload = System.IO.Path.Combine(pathUser, "Szamle");
+            
             if (invoiceIpc != null)
             {
                 MessageBox.Show("Csak egy példányban futtatható a program!\n Ha nem látsz másik ugyanilyen ablakot, indítsd újra a gépet");
             }
             invoiceIpc = new InvoiceIpc();
             this.webBrowser.RegisterJsObject("szamleIpc", invoiceIpc);
-            directoryMask = pathDownload;
+            if (String.IsNullOrWhiteSpace(Properties.Settings.Default.DirectoryMask))
+            {
+                directoryMask = pathDownload;
+            }
+            else
+            {
+                directoryMask = Properties.Settings.Default.DirectoryMask;
+            }
             this.webBrowser.LoadingStateChanged += WebBrowser_LoadingStatusChanged;
             this.webBrowser.LifeSpanHandler = new szamle.LifeSpanHandler();
         }
@@ -150,7 +182,13 @@ namespace szamle
             try
             {
                 this.RajtaGomb.IsEnabled = false;
-                this.webBrowser.DownloadHandler = new DownloadHandler(directoryMask, this.webBrowser);
+                user.IsEnabled = false;
+                pwd.IsEnabled = false;
+                dlpath.IsEnabled = false;
+                pProvider.IsEnabled = false;
+                pIssuer.IsEnabled = false;
+                pYear.IsEnabled = false;
+                this.webBrowser.DownloadHandler = new DownloadHandler(directoryMask, this.webBrowser, Properties.Settings.Default.OverwriteFiles);
                 busy(true);
                 //if (!System.IO.Directory.Exists(directoryMask)) System.IO.Directory.CreateDirectory(directoryMask);
                 status = dlStatus.home;
@@ -169,6 +207,7 @@ namespace szamle
                 Mouse.OverrideCursor = busyState ? Cursors.Wait : null;
             }));
         }
+
         private void sendLogon()
         {
             Application.Current.Dispatcher.Invoke(new Action(() => { 
@@ -385,6 +424,7 @@ namespace szamle
             //webBrowser = null;
             webBrowser.GetBrowser().StopLoad();
             webBrowser.Dispose();
+            Properties.Settings.Default.DirectoryMask = _directoryMask;
             Properties.Settings.Default.Save();
             Application.Current.Shutdown();
         }
