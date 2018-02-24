@@ -17,9 +17,6 @@ A szolgáltató bármikor megváltoztathatja az oldalát úgy, hogy megakadályo
 ToDo: 
 - XML-ek letöltése
 - sebesség
-- stabilitás
 - telepítő program
-- html függőségek csökkentése
-- dokumentáció (tudom tudom, azzal kéne kezdeni)
 
-PS: vannak egyszerűbb, technkailag elegánsabb megoldások itt a githubon, akinek inkább olyan ló kell, használja azokat. Ez maradjon azoknak akinek semmit sem mond a "python" meg "bash".
+PS: vannak egyszerűbb megoldások itt a githubon, akinek inkább olyan ló kell, használja azokat. Ez maradjon azoknak akinek semmit sem mond a "python" meg "bash".
